@@ -85,11 +85,21 @@ template<typename A, typename B> struct hash_table {
 };
 
 int main() {
-	hash_table<string, int> test(7);
-	test.in("amelia", 10);
-	test.in("artem", 4);
-	test.in("pasha", 3);
-	test.in("ulyna", 9);
-	cout << test.get("amelia");
+	cout << "how many students do u want to add" << endl;
+	int size; cin >> size;
+	hash_table<string, int> students(size);
+	cout << "format of input" << endl << "name" << endl << "mark" << endl;
+	for (int i = 0; i < size; i++) {
+		string name;
+		int mark;
+		cin >> name;
+		cin >> mark;
+		students.in(name, mark);
+	}
+	while (true) {
+		cout << "enter name to see mark" << endl;
+		string name; cin >> name;
+		cout << students.get(name)<<endl;
+	}
 }
 
