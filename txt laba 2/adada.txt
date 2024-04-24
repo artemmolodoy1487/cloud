@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+
+constexpr auto BASIC = "basic";
+constexpr auto TUPLE = "tuple";
+constexpr auto SET = "set";
+
+using namespace std;
+
+struct node {
+	node* dad;
+	string type;// Defines type of node  (basic, tuple or set)
+
+	vector<node*>children;
+	// If object is tuple or set, it has children, but no value
+	string value;
+
+	node() {
+		dad = nullptr;
+		type = BASIC;
+		children = {};
+		value = "";// Empty element;
+	}
+
+	void add_child(string t) {
+			node* n = new node;
+			n->type = t;
+			children.push_back(n); // Function of adding child
+		
+	}
+};
+
+class tree {
+public:
+	node* root;
+	node* current;
+
+	tree() { root = new node; current = root; }
+
+
+	void parse_from_str(string str) {
+		cout << "starting parsing" << endl;
+		
+		
+		if (str[0] == '{') { root->type = SET; }
+		else { root->type = TUPLE; }//detect type of root set (first layer)
+		current = root;
+
+		string current_value;
+		for (int i = 1; i < str.size(); i++) {
+			cout << "current value is" << current_value<<endl;
+			if (str[i - 1] == '{' || str[i - 1] == '<' || str[i - 1] == ',') {//Making new child
+				cout << "making child" << endl;
+
+				if (str[i] == '{') { current->add_child(SET); }
+				else if (str[i] == '<') { current->add_child(TUPLE); }
+				else { current->add_child(BASIC); }
+				current->children.back()->dad = current;
+				current = current->children.back();// transition current pointer to child node
+
+				if (str[i] == ',') {
+					cout << "here" << endl;
+					if (current->type == BASIC) { current->value = current_value; current_value = ""; cout << "value writed - "<< current->value<<endl; }
+					current = current->dad;
+				}
+				if (str[i] == '}' || str[i] == '>') {
+					if (current->type == BASIC) { current->value = current_value; current_value = ""; }
+					current = current->dad->dad;
+				}
+
+			}
+
+			if (str[i] != '{' && str[i] != '<' && str[i] != '}' && str[i] != '>' && str[i] != ',') {
+				current_value.push_back(str[i]);
+				cout << str[i];
+			}
+
+		}
+
+
+	}
+};
+
+int main() {
+	tree test;
+	test.parse_from_str("{1,2,3,<4,5>}");
+	cout << endl << " - " << test.root->children[0]->value;
+}
