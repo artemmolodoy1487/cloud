@@ -40,7 +40,7 @@ struct Employee {
 		job_title = "undefined";
 		load_volume = 0;
 	}
-	Employee(string f_name,string dep_name,string j_title, int l_volume) {//конструктор c параметром
+	Employee(string f_name, string dep_name, string j_title, int l_volume) {//конструктор c параметром
 		full_name = f_name;
 		department_name = dep_name;
 		job_title = j_title;
@@ -51,7 +51,7 @@ struct Employee {
 ostream& operator<<(ostream& output, const Employee& employee) {// перегрузка оператора <<
 	output << employee.full_name << ':' << endl;
 	output << employee.department_name << ',' << employee.job_title << ',' << employee.load_volume << endl;
-	
+
 	return output;
 }
 
@@ -92,8 +92,8 @@ struct current_list {
 		for (auto s : str) {
 
 			if (s == ',') { Employee_parameters.push_back(current_value); current_value = ""; }
-			else if (s == ';') { 
-				Employee_parameters.push_back(current_value); current_value = ""; 
+			else if (s == ';') {
+				Employee_parameters.push_back(current_value); current_value = "";
 				Employee current(Employee_parameters[0], Employee_parameters[1], Employee_parameters[2], stoi(Employee_parameters[3]));
 				Employee_parameters = {};
 				list.push_back(current);
@@ -125,7 +125,7 @@ struct current_list {
 		}
 		if (sample.empty() == true) { cout << "sample is empty" << endl; }
 
-		
+
 		return sample;
 	}
 
@@ -167,7 +167,7 @@ struct current_list {
 		int n = list.size();
 		for (int i = 0; i < n - 1; i++) {
 			for (int j = 0; j < n - i - 1; j++) {
-				if (list[j].load_volume > list[j + 1].load_volume) {
+				if (list[j].load_volume < list[j + 1].load_volume) {
 					swap(list[j], list[j + 1]);
 				}
 			}
@@ -271,19 +271,20 @@ struct Screen {
 	signed char active_button_index = 0;
 	current_list actual_list;
 	Screen() {
-		buttons.resize(8);
-		buttons[0].text = "Show from file";
-		buttons[1].text = "Add new";
-		buttons[2].text = "Linear search";
-		buttons[3].text = "Binary search";
-		buttons[4].text = "Bubble sort";
-		buttons[5].text = "Heap sort";
-		buttons[6].text = "Quick sort";
-		buttons[7].text = "Exit";
+		buttons.resize(9);
+		buttons[0].text = "- Show from file";
+		buttons[1].text = "- Add new";
+		buttons[2].text = "- Linear search";
+		buttons[3].text = "- Binary search";
+		buttons[4].text = "- Bubble sort";
+		buttons[5].text = "- Heap sort";
+		buttons[6].text = "- Quick sort";
+		buttons[7].text = "- Delete";
+		buttons[8].text = "- Exit";
 
-		buttons[0].funct = ([this]() { 
-			clear(); 
-			cout << actual_list; 
+		buttons[0].funct = ([this]() {
+			clear();
+			cout << actual_list;
 			});
 
 		buttons[1].funct = ([this]() {
@@ -299,7 +300,7 @@ struct Screen {
 				char space = _getch();
 				if (space == ' ') {
 					actual_list.list.push_back(emp);
-					write_sample_to_file(actual_list.list,FILE_DIR);
+					write_sample_to_file(actual_list.list, FILE_DIR);
 					break;
 				}
 				else {}
@@ -310,8 +311,8 @@ struct Screen {
 		buttons[2].funct = ([this]() {
 			clear();
 			vector<Employee> sample = actual_list.linearSearch();
-			write_sample_to_file(sample,SAMPLE_FILE_DIR);
-			
+			write_sample_to_file(sample, SAMPLE_FILE_DIR);
+
 			});
 
 		buttons[3].funct = ([this]() {
@@ -336,7 +337,18 @@ struct Screen {
 			actual_list.quickSort();
 			});
 
-		buttons[7].funct = ([this]() { write_sample_to_file(actual_list.list, FILE_DIR); exit(0); });
+		buttons[7].funct = ([this]() {
+			cout << "Enter load volume" << endl;
+			int lv;
+			cin >> lv;
+			actual_list.list.erase(std::remove_if(actual_list.list.begin(), actual_list.list.end(), [lv](const Employee& s) {
+				return s.load_volume == lv;
+				}), actual_list.list.end());
+			write_sample_to_file(actual_list.list, FILE_DIR);
+
+			});
+
+		buttons[8].funct = ([this]() { write_sample_to_file(actual_list.list, FILE_DIR); exit(0); });
 
 	}
 
@@ -345,7 +357,7 @@ struct Screen {
 	}
 
 	void down() {
-		if (active_button_index < buttons.size()-1) { active_button_index++; }
+		if (active_button_index < buttons.size() - 1) { active_button_index++; }
 	}
 
 	void clear() {
@@ -379,15 +391,13 @@ struct Screen {
 };
 ostream& operator<<(ostream& output, const Screen& s) {// перегрузка оператора <<
 	for (int i = 0; i < static_cast<int>(s.active_button_index); i++) {
-		output << s.buttons[i]<<endl;
+		output << s.buttons[i] << endl;
 	} cout << s.buttons[static_cast<int>(s.active_button_index)] << " - ===" << endl;
 	for (int i = static_cast<int>(s.active_button_index) + 1; i < s.buttons.size(); i++) {
 		output << s.buttons[i] << endl;
 	}
 	return output;
 }
-
-
 
 
 
@@ -399,4 +409,4 @@ int main() {
 		test.clear();
 	}
 
-}
+}///rjv
