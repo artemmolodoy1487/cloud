@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <vector>
 #include <fstream>
 #include <string>
@@ -15,7 +15,7 @@ struct node {
 	string type;// тип узла базовый, кортэж или неор. множество
 
 	vector<node*>children;//пустой для базового элемента 
-	
+
 	string value;//не пустой только для базового элемента
 
 	node() {
@@ -26,11 +26,11 @@ struct node {
 	}
 
 	void add_child(string t) {
-			node* n = new node;
-			n->type = t;
-			children.push_back(n); // Function of adding child
-		
-	} 
+		node* n = new node;
+		n->type = t;
+		children.push_back(n); // Function of adding child
+
+	}
 	//параметром передается тип создаваемого узла, current указатель надо переводить самостоятельно
 };
 
@@ -46,8 +46,8 @@ public:
 	//Строку передавать затримленую от пробелов и начиная с первогой скобки
 	void parse_from_str(string str) {
 		cout << "starting parsing" << endl;
-		
-		
+
+
 		if (str[0] == '{') { root->type = SET; }
 		else { root->type = TUPLE; }//определяет тип корневого множества
 		current = root;
@@ -55,7 +55,7 @@ public:
 		string current_value;
 
 		for (int i = 1; i < str.size(); i++) {
-			
+
 			if (str[i - 1] == '{' || str[i - 1] == '<' || str[i - 1] == ',') {
 
 				if (str[i] == '{') {
@@ -83,7 +83,7 @@ public:
 					current->value = current_value;
 					current_value = "";
 				}
-				current = current->dad; 
+				current = current->dad;
 			}
 			else if (str[i] != '{' && str[i] != '<' && str[i] != ',' && str[i] != '}' && str[i] != '>') {
 				current_value.push_back(str[i]);
@@ -113,7 +113,7 @@ bool check_equality_for_sets(node* a, node* b) {
 
 }
 
-void check_equality(node* a, node* b , bool &status) {
+void check_equality(node* a, node* b, bool& status) {
 
 	if (a->type != b->type) { status = false; }
 	//если типы все таки совпадают
@@ -137,10 +137,10 @@ void check_equality(node* a, node* b , bool &status) {
 }
 
 void read_from_file(const string& filename, string& firstLine, string& secondLine) {
-	ifstream file(filename); 
+	ifstream file(filename);
 
 	if (file.is_open()) {
-		if (!getline(file, firstLine)) { 
+		if (!getline(file, firstLine)) {
 			cout << "Не удалось считать первую строку." << endl; return;
 		}
 		if (!getline(file, secondLine)) {
@@ -184,6 +184,31 @@ string print_tree(node* a) {
 	print_tree(a, result);
 	return result;
 }
+
+bool checkString(const std::string& input) {
+	
+
+	// Считаем количество символов {, }, < и >
+	int curlyBraces = 0;
+	int angledBrackets = 0;
+	for (char c : input) {
+		if (c == '{') {
+			curlyBraces++;
+		}
+		else if (c == '}') {
+			curlyBraces--;
+		}
+		else if (c == '<') {
+			angledBrackets++;
+		}
+		else if (c == '>') {
+			angledBrackets--;
+		}
+	}
+
+	// Проверяем, что количество {, }, < и > равно
+	return curlyBraces == 0 && angledBrackets == 0;
+}
 int main() {
 	//разность - все что пренадлежат А, но не пренадлежат Б
 
@@ -194,7 +219,10 @@ int main() {
 	B = B.substr(2);
 	cout << A << endl;
 	cout << B << endl;
-
+	if (checkString(A) == false || checkString(B) == false) {
+		cout << "wrong format" << endl;
+		exit(0);
+	}
 	tree a;
 	tree b;
 	a.parse_from_str(A);
@@ -216,6 +244,6 @@ int main() {
 	c.root->type = SET;
 
 	cout << "size " << c.root->type << endl;
-	cout<<print_tree(c.root);
+	cout << print_tree(c.root);
 
 }
